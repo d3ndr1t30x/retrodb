@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ExploitDB Viewer</title>
+    <style>
+        body { background-color: black; color: #00ff00; font-family: 'Courier New', monospace; padding: 0; margin: 0; display: flex; height: 100vh; }
+        .sidebar { width: 25%; padding: 20px; border-right: 1px solid #00ff00; overflow-y: auto; }
+        .main { width: 75%; padding: 20px; overflow-y: auto; }
+        h1, h2 { color: #00ff00; }
+        form { margin-bottom: 20px; }
+        input[type="text"] { background-color: black; color: #00ff00; border: 1px solid #00ff00; padding: 5px; width: 300px; }
+        button { background-color: black; color: #00ff00; border: 1px solid #00ff00; padding: 5px 10px; cursor: pointer; }
+        ul { list-style-type: none; padding: 0; }
+        li { margin-bottom: 5px; }
+        a { color: #00ff00; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .view-btn { display: inline-block; padding: 2px 5px; background-color: #003300; border: 1px solid #00ff00; border-radius: 3px; }
+        .active { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Platforms</h2>
+        <ul>
+        {% for p in unique_platforms %}
+            <li><a href="/?platform={{p}}{% if q %}&q={{q}}{% endif %}{% if type_ %}&type={{type_}}{% endif %}" {% if platform == p %}class="active"{% endif %}>{{p}}</a></li>
+        {% endfor %}
+        </ul>
+        <h2>Types</h2>
+        <ul>
+        {% for t in unique_types %}
+            <li><a href="/?type={{t}}{% if q %}&q={{q}}{% endif %}{% if platform %}&platform={{platform}}{% endif %}" {% if type_ == t %}class="active"{% endif %}>{{t}}</a></li>
+        {% endfor %}
+        </ul>
+        <h2>Quick Actions</h2>
+        <ul>
+            <li><a href="/">Clear Filters</a></li>
+            <li><a href="/random">Random Exploit</a></li>
+        </ul>
+    </div>
+    <div class="main">
+        <h1>💀 ExploitDB Viewer 💀</h1>
+        <h2>Created by Dendrite</h2>
+        {% if q or platform or type_ %}
+        <p>Active Filters: {% if q %}Search: {{q}} {% endif %}{% if platform %}Platform: {{platform}} {% endif %}{% if type_ %}Type: {{type_}}{% endif %}</p>
+        {% endif %}
+        <form action="/" method="get">
+            <input type="text" name="q" value="{{ q }}" placeholder="Search exploits by description">
+            <input type="hidden" name="platform" value="{{ platform }}">
+            <input type="hidden" name="type" value="{{ type_ }}">
+            <button type="submit">Search</button>
+        </form>
+        <ul>
+        {% for exploit in exploits %}
+            <li>
+                <strong>{{ exploit.date }}</strong> - {{ exploit.description }} ({{ exploit.platform }})
+                <a href="/exploit?path={{ exploit.file }}" class="view-btn">View</a>
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
